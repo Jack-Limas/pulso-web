@@ -16,15 +16,23 @@ interface DemoUser {
   fullName: string;
   bankCode: string;
   alias: string;
+  months: string[];
 }
 
+const RECENT = ["2026-08", "2026-09", "2026-10"];
+// October is left out on purpose: those PDFs are for uploading by hand in the browser.
+const LONG_HISTORY = ["2026-06", "2026-07", "2026-08", "2026-09"];
+
 const USERS: DemoUser[] = [
-  { slug: "estudiante", fullName: "Valentina Rojas", bankCode: "banco-andino", alias: "Ahorros" },
-  { slug: "freelancer", fullName: "Andrés Gómez", bankCode: "cooperativa-sur", alias: "Cuenta cooperativa" },
-  { slug: "pyme", fullName: "Panadería La Espiga", bankCode: "banco-andino", alias: "Cuenta empresarial" },
-  { slug: "familia", fullName: "Carolina Mejía", bankCode: "cooperativa-sur", alias: "Ahorro familiar" },
+  { slug: "estudiante", fullName: "Valentina Rojas", bankCode: "banco-andino", alias: "Ahorros", months: RECENT },
+  { slug: "freelancer", fullName: "Andrés Gómez", bankCode: "cooperativa-sur", alias: "Cuenta cooperativa", months: RECENT },
+  { slug: "pyme", fullName: "Panadería La Espiga", bankCode: "banco-andino", alias: "Cuenta empresarial", months: RECENT },
+  { slug: "familia", fullName: "Carolina Mejía", bankCode: "cooperativa-sur", alias: "Ahorro familiar", months: RECENT },
+  { slug: "conductor", fullName: "Jhon Fredy Muñoz", bankCode: "banco-andino", alias: "Cuenta conductor", months: LONG_HISTORY },
+  { slug: "docente", fullName: "Laura Castillo", bankCode: "cooperativa-sur", alias: "Nómina", months: LONG_HISTORY },
+  { slug: "medica", fullName: "Sofía Arango", bankCode: "banco-andino", alias: "Cuenta principal", months: LONG_HISTORY },
+  { slug: "emprendedora", fullName: "Mariana Torres", bankCode: "cooperativa-sur", alias: "Tienda online", months: LONG_HISTORY },
 ];
-const MONTHS = ["2026-08", "2026-09", "2026-10"];
 const EMAIL_DOMAIN = "pulso.demo";
 
 const apiUrl = process.env.API_URL?.replace(/\/$/, "");
@@ -91,6 +99,15 @@ async function sha256Hex(data: ArrayBuffer): Promise<string> {
   return Buffer.from(digest).toString("hex");
 }
 
+async function uploadedPeriods(token: string, accountId: string): Promise<Set<string>> {
+  const { statements = [] } = await call<{ statements?: { periodStart: string }[] }>(
+    "StatementService/ListStatements",
+    { bankAccountId: accountId, page: { pageSize: 100 } },
+    token,
+  );
+  return new Set(statements.map((statement) => statement.periodStart.slice(0, 7)));
+}
+
 async function upload(user: DemoUser, token: string, accountId: string, month: string) {
   const fileName = `${user.slug}-${month}.pdf`;
   const file = await readFile(join(pdfDir!, fileName));
@@ -131,8 +148,10 @@ async function main(): Promise<void> {
     console.log(`${user.slug}@${EMAIL_DOMAIN}`);
     const token = await signIn(user);
     const accountId = await accountFor(user, token);
+    // A period already there is skipped, even if its PDF was regenerated with other bytes.
+    const done = await uploadedPeriods(token, accountId);
     // In order, so each month is analyzed with the previous ones as its baseline.
-    for (const month of MONTHS) {
+    for (const month of user.months.filter((candidate) => !done.has(candidate))) {
       await upload(user, token, accountId, month);
     }
   }
