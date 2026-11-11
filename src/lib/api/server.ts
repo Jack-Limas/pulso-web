@@ -11,6 +11,8 @@ import { StatementService } from "@/gen/pulso/v1/statement_service_pb";
 import { serverEnv } from "@/lib/server-env";
 import { ACCESS_COOKIE } from "@/lib/session/constants";
 
+const CATALOG_REVALIDATE_SECONDS = 3600;
+
 function transport(accessToken?: string) {
   const authorize: Interceptor = (next) => (request) => {
     if (accessToken) {
@@ -21,7 +23,14 @@ function transport(accessToken?: string) {
   return createConnectTransport({
     baseUrl: serverEnv().apiUrl,
     interceptors: [authorize],
-    fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    // Private data is never cached; public catalog data may be reused between regenerations.
+    fetch: (input, init) =>
+      fetch(
+        input,
+        accessToken
+          ? { ...init, cache: "no-store" }
+          : { ...init, next: { revalidate: CATALOG_REVALIDATE_SECONDS } },
+      ),
   });
 }
 
