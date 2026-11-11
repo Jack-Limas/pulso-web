@@ -279,7 +279,7 @@ export function UploadWorkbench({
           <div className="flex items-center gap-5">
             <Heartbeat />
             <div>
-              <p className="font-display text-lg font-bold">
+              <p data-testid="upload-status" className="font-display text-lg font-bold">
                 {failed ? t.stages.FAILED : step ? t.stages[step] : t.drop}
               </p>
               {page && step === "extracting" && (
@@ -318,7 +318,7 @@ export function UploadWorkbench({
 
         <section className="card p-6">
           <h2 className="mb-4 font-display text-lg font-bold">{t.metrics}</h2>
-          <dl className="grid grid-cols-2 gap-3 text-sm">
+          <dl data-testid="upload-metrics" className="grid grid-cols-2 gap-3 text-sm">
             {[
               [t.mode, metrics ? (metrics.mode === "worker" ? t.worker : t.main) : "—"],
               [t.metricTransactions, metrics?.transactions ?? "—"],
