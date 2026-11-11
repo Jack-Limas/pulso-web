@@ -36,7 +36,8 @@ async function callAuth(
     body: JSON.stringify(body),
     cache: "no-store",
   });
-  const json = (await response.json()) as { accessToken?: string } & Partial<ApiError>;
+  // A sleeping or restarting API answers with an HTML error page, not JSON.
+  const json = (await response.json().catch(() => ({}))) as { accessToken?: string } & Partial<ApiError>;
   if (!response.ok || !json.accessToken) {
     return { code: json.code ?? "unavailable", message: json.message ?? "" };
   }
