@@ -22,7 +22,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": [
+  "include": ["scripts/**/*.ts", 
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

@@ -10,7 +10,8 @@
     "generate": "buf generate",
     "typecheck": "tsc --noEmit",
     "lint:proto": "buf lint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed:demo": "tsx scripts/seed-demo.ts"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.17.0",
@@ -37,6 +38,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.1.0"
   }
