@@ -40,7 +40,6 @@ export async function extractLines(
   const task = pdfjs.getDocument({
     data: new Uint8Array(data),
     disableFontFace: true,
-    isEvalSupported: false,
   });
   let document: pdfjs.PDFDocumentProxy;
   try {
