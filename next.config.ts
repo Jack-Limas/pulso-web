@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 
+// The classic rendering model keeps SSG, ISR, SSR and CSR explicit per route,
+// which is what this project demonstrates.
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
   turbopack: {
     rules: {
       "*.css": {
