@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "lint:proto": "buf lint",
     "test": "vitest run",
-    "seed:demo": "tsx scripts/seed-demo.ts"
+    "seed:demo": "tsx scripts/seed-demo.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.17.0",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@bufbuild/buf": "^1.75.0",
     "@bufbuild/protoc-gen-es": "^2.17.0",
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^22.20.5",
     "@types/react": "^19",
