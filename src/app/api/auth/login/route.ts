@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
+import { isLocale } from "@/lib/i18n/config";
 import { isApiError, login } from "@/lib/session/api-auth";
 import { writeSession } from "@/lib/session/cookies";
+import { readCredentials } from "@/lib/session/read-credentials";
+
+const SEE_OTHER = 303;
 
 export async function POST(request: Request) {
-  const { email, password } = (await request.json()) as { email?: string; password?: string };
-  const result = await login(String(email ?? ""), String(password ?? ""));
+  const { fields, isFormPost } = await readCredentials(request);
+  const locale = isLocale(fields.locale ?? "") ? fields.locale : "es";
+  const result = await login(fields.email ?? "", fields.password ?? "");
   if (isApiError(result)) {
-    return NextResponse.json({ code: result.code }, { status: 401 });
+    return isFormPost
+      ? NextResponse.redirect(new URL(`/${locale}/login?error=${result.code}`, request.url), SEE_OTHER)
+      : NextResponse.json({ code: result.code }, { status: 401 });
   }
-  return writeSession(NextResponse.json({ ok: true }), result);
+  const response = isFormPost
+    ? NextResponse.redirect(new URL(`/${locale}/app/dashboard`, request.url), SEE_OTHER)
+    : NextResponse.json({ ok: true });
+  return writeSession(response, result);
 }
