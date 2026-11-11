@@ -4,6 +4,9 @@ import { isApiError, register } from "@/lib/session/api-auth";
 import { writeSession } from "@/lib/session/cookies";
 import { readCredentials } from "@/lib/session/read-credentials";
 
+// A sleeping backend can take close to a minute to answer its first request.
+export const maxDuration = 60;
+
 const SEE_OTHER = 303;
 
 export async function POST(request: Request) {

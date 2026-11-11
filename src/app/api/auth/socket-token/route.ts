@@ -4,6 +4,9 @@ import { isApiError, refresh } from "@/lib/session/api-auth";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/session/constants";
 import { writeSession } from "@/lib/session/cookies";
 
+// A sleeping backend can take close to a minute to answer its first request.
+export const maxDuration = 60;
+
 const NO_STORE = { "Cache-Control": "no-store" };
 
 // The WebSocket goes straight to the API, so the browser needs the short-lived token for its

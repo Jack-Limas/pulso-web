@@ -5,6 +5,9 @@ import { isApiError, refresh } from "@/lib/session/api-auth";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/session/constants";
 import { clearSession, writeSession } from "@/lib/session/cookies";
 
+// A sleeping backend can take close to a minute to answer its first request.
+export const maxDuration = 60;
+
 // Only what the browser legitimately needs; sign in and out have their own routes.
 const ALLOWED = /^pulso\.v1\.(BankAccountService|StatementService|InsightsService|AdminService)\/\w+$|^pulso\.v1\.AuthService\/GetCurrentUser$/;
 const FORWARDED_HEADERS = ["content-type", "connect-protocol-version", "connect-timeout-ms"];
