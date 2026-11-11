@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { publicClients } from "@/lib/api/server";
 import { isLocale } from "@/lib/i18n/config";
+import { SAMPLE_STATEMENTS } from "@/lib/samples";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 
 // ISR: served from the cache and rebuilt in the background at most once an hour, so a bank
@@ -46,6 +47,11 @@ export default async function BanksPage({ params }: { params: Promise<{ locale: 
                   <div>
                     <p className="font-display text-xl font-bold">{bank.name}</p>
                     <p className="font-mono text-xs text-muted">{bank.code}</p>
+                    {SAMPLE_STATEMENTS[bank.code] && (
+                      <a href={SAMPLE_STATEMENTS[bank.code]} download className="mt-2 inline-block text-sm font-semibold text-blue hover:underline">
+                        {dictionary.banks.sample}
+                      </a>
+                    )}
                   </div>
                 </TiltCard>
               </li>

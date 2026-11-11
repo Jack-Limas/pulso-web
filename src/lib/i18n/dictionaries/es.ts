@@ -75,6 +75,7 @@ export const es = {
     subtitle: "Cada banco imprime su extracto distinto; Pulso tiene un lector para cada uno.",
     updated: "Lista regenerada cada hora (ISR).",
     empty: "No pudimos cargar la lista ahora mismo. Intenta en unos minutos.",
+    sample: "Descargar extracto de ejemplo",
   },
   auth: {
     loginTitle: "Bienvenido de vuelta",
@@ -139,6 +140,7 @@ export const es = {
       drop: "Arrastra tu PDF aquí",
       browse: "o haz clic para elegirlo",
       limit: "Solo PDF, máximo 10 MB.",
+      samples: "¿No tienes un extracto a mano? Descarga uno de ejemplo:",
       mode: "Procesar con",
       worker: "Web Worker",
       main: "Hilo principal",

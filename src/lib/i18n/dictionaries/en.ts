@@ -77,6 +77,7 @@ export const en: Dictionary = {
     subtitle: "Every bank prints its statement differently; Pulso has a reader for each one.",
     updated: "List regenerated every hour (ISR).",
     empty: "We couldn't load the list right now. Try again in a few minutes.",
+    sample: "Download a sample statement",
   },
   auth: {
     loginTitle: "Welcome back",
@@ -141,6 +142,7 @@ export const en: Dictionary = {
       drop: "Drop your PDF here",
       browse: "or click to choose it",
       limit: "PDF only, 10 MB max.",
+      samples: "No statement at hand? Download a sample:",
       mode: "Process with",
       worker: "Web Worker",
       main: "Main thread",

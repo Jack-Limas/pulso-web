@@ -15,6 +15,7 @@ import { formatMoney } from "@/lib/format";
 import { format } from "@/lib/i18n/get-dictionary";
 import { startFrameMonitor, usedHeapBytes } from "@/lib/metrics/frame-monitor";
 import { useRealtime } from "@/lib/realtime/realtime-provider";
+import { SAMPLE_STATEMENTS } from "@/lib/samples";
 import { MAX_FILE_BYTES } from "@/lib/statements/pipeline";
 import { type ProcessingMode as Mode, processInBrowser } from "@/lib/statements/run";
 import { StatementError } from "@/lib/statements/types";
@@ -311,6 +312,25 @@ export function UploadWorkbench({
               }}
             />
           </label>
+          <p className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted">
+            {t.samples}
+            {banks.flatMap((bank) => {
+              const href = SAMPLE_STATEMENTS[bank.code];
+              return href
+                ? [
+                    <a
+                      key={bank.code}
+                      href={href}
+                      download
+                      className="inline-flex items-center gap-1 rounded-full border border-line px-3 py-1 font-semibold text-blue hover:border-blue"
+                    >
+                      <Icons.upload className="size-3.5 rotate-180" />
+                      {bank.name}
+                    </a>,
+                  ]
+                : [];
+            })}
+          </p>
         </section>
       </div>
 
