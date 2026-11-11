@@ -16,6 +16,11 @@ interface RealtimeValue {
 }
 
 const RealtimeContext = createContext<RealtimeValue | null>(null);
+
+/** Accepts http(s) URLs too: a misconfigured scheme should not silently disable live updates. */
+export function toSocketUrl(url: string): string {
+  return url.replace(/^http(s?):\/\//, "ws$1://");
+}
 const MAX_BACKOFF_MS = 30_000;
 
 async function fetchSocketToken(): Promise<string | null> {
@@ -43,7 +48,7 @@ export function RealtimeProvider({ url, children }: { url: string; children: Rea
         scheduleReconnect();
         return;
       }
-      socket = new WebSocket(url);
+      socket = new WebSocket(toSocketUrl(url));
       socket.onopen = () => socket?.send(JSON.stringify({ type: "auth", token }));
       socket.onmessage = ({ data }) => {
         const message = JSON.parse(String(data)) as RealtimeEvent | { type: "ready" };
