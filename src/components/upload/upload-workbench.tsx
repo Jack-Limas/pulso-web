@@ -7,9 +7,11 @@ import { useI18n } from "@/components/i18n/i18n-provider";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import type { BankAccount, SupportedBank } from "@/gen/pulso/v1/bank_account_service_pb";
-import { TransactionType } from "@/gen/pulso/v1/common_pb";
+import { StatementStatus, TransactionType } from "@/gen/pulso/v1/common_pb";
+import type { GetDashboardResponse } from "@/gen/pulso/v1/insights_service_pb";
 import { ProcessingMode } from "@/gen/pulso/v1/statement_service_pb";
 import { api } from "@/lib/api/browser";
+import { formatMoney } from "@/lib/format";
 import { format } from "@/lib/i18n/get-dictionary";
 import { startFrameMonitor, usedHeapBytes } from "@/lib/metrics/frame-monitor";
 import { useRealtime } from "@/lib/realtime/realtime-provider";
@@ -37,6 +39,9 @@ const STEPS = [
   "COMPLETED",
 ] as const;
 type Step = (typeof STEPS)[number];
+
+// The socket is the fast path; polling is the safety net when an event is lost or late.
+const POLL_INTERVAL_MS = 3000;
 
 interface Metrics {
   mode: Mode;
@@ -66,6 +71,8 @@ export function UploadWorkbench({
   const [metrics, setMetrics] = useState<Metrics>();
   const [inp, setInp] = useState<number>();
   const [dragging, setDragging] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [summary, setSummary] = useState<GetDashboardResponse>();
   const statementId = useRef<string>(null);
   // Events can arrive before the upload response tells us the statement id, so none are dropped.
   const latestById = useRef(new Map<string, { step: Step; failed: boolean }>());
@@ -82,6 +89,36 @@ export function UploadWorkbench({
       current && STEPS.indexOf(current) > STEPS.indexOf(update.step) ? current : update.step,
     );
   }
+
+  const finished = step === "COMPLETED" || Boolean(failed);
+
+  useEffect(() => {
+    if (!activeId || finished) {
+      return;
+    }
+    const timer = setInterval(() => {
+      void api.statements
+        .getStatement({ id: activeId })
+        .then(({ statement }) => {
+          const status = statement ? StatementStatus[statement.status] : undefined;
+          if (status === "FAILED") {
+            apply({ step: "COMPLETED", failed: true });
+          } else if (status && STEPS.includes(status as Step)) {
+            apply({ step: status as Step, failed: false });
+          }
+        })
+        .catch(() => undefined);
+    }, POLL_INTERVAL_MS);
+    return () => clearInterval(timer);
+    // apply only wraps state setters, so it never goes stale.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeId, finished]);
+
+  useEffect(() => {
+    if (activeId && step === "COMPLETED") {
+      void api.insights.getDashboard({ statementId: activeId }).then(setSummary).catch(() => undefined);
+    }
+  }, [activeId, step]);
 
   useRealtime((event) => {
     if (event.type !== "statement.stage" && event.type !== "statement.status") {
@@ -108,6 +145,8 @@ export function UploadWorkbench({
     setFailed(undefined);
     setMetrics(undefined);
     setPage(undefined);
+    setSummary(undefined);
+    setActiveId(null);
     statementId.current = null;
   }
 
@@ -165,6 +204,7 @@ export function UploadWorkbench({
       });
       const id = response.statement?.id ?? null;
       statementId.current = id;
+      setActiveId(id);
       apply(latestById.current.get(id ?? "") ?? { step: "RECEIVED", failed: false });
       setMetrics({
         mode,
@@ -306,6 +346,31 @@ export function UploadWorkbench({
               );
             })}
           </ol>
+          {step === "COMPLETED" && summary && (
+            <div data-testid="upload-summary" className="mt-6 space-y-3 rounded-2xl bg-surface-2/60 p-4 text-sm">
+              <p className="flex justify-between gap-2">
+                <span className="text-muted">{dictionary.app.dashboard.expenses}</span>
+                <span className="font-display font-bold">{formatMoney(summary.expenseCents, locale)}</span>
+              </p>
+              {summary.anomalies.slice(0, 3).map((anomaly) => (
+                <p key={anomaly.transactionId} className="flex gap-2">
+                  <Icons.alert className="mt-0.5 size-4 shrink-0 text-red" />
+                  <span>
+                    <span className="font-semibold">{anomaly.description}</span>{" "}
+                    <span className="text-muted">{anomaly.reason}</span>
+                  </span>
+                </p>
+              ))}
+              {summary.recommendations.slice(0, 2).map((tip) => (
+                <p key={tip.title} className="flex gap-2">
+                  <Icons.sparkles className="mt-0.5 size-4 shrink-0 text-violet" />
+                  <span>
+                    <span className="font-semibold">{tip.title}.</span> <span className="text-muted">{tip.detail}</span>
+                  </span>
+                </p>
+              ))}
+            </div>
+          )}
           {step === "COMPLETED" && (
             <div className="mt-6 flex flex-wrap gap-2">
               <ButtonLink href={`/${locale}/app/dashboard`}>{t.viewDashboard}</ButtonLink>
