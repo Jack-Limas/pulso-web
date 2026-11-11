@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
 import { themeBootstrapScript } from "@/components/theme/theme";
+import { WakeServers } from "@/components/wake/wake-servers";
 import { isLocale, LOCALES } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import "../globals.css";
@@ -48,6 +49,7 @@ export default async function LocaleLayout({
         <I18nProvider locale={locale} dictionary={getDictionary(locale)}>
           {children}
         </I18nProvider>
+        <WakeServers />
       </body>
     </html>
   );
