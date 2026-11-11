@@ -1,26 +1,131 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f4f6ff;
+  --surface: #ffffff;
+  --surface-2: #eef1fb;
+  --text: #0b1030;
+  --muted: #5a6283;
+  --line: rgb(11 16 48 / 0.09);
+  --blue: #1f4bff;
+  --red: #ff2e4d;
+  --yellow: #ffd23f;
+  --violet: #7a3cff;
+  --green: #00b37e;
+  --glow: rgb(31 75 255 / 0.18);
+}
+
+.dark {
+  --bg: #060918;
+  --surface: #0e1330;
+  --surface-2: #161c42;
+  --text: #eef1ff;
+  --muted: #9aa3c7;
+  --line: rgb(255 255 255 / 0.08);
+  --glow: rgb(31 75 255 / 0.35);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-blue: var(--blue);
+  --color-red: var(--red);
+  --color-yellow: var(--yellow);
+  --color-violet: var(--violet);
+  --color-green: var(--green);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shine: shine 3.5s ease-in-out infinite;
+  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-pulse-line: pulse-line 2.4s linear infinite;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @keyframes float {
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes shine {
+    0% {
+      transform: translateX(-120%) skewX(-20deg);
+    }
+    60%,
+    100% {
+      transform: translateX(220%) skewX(-20deg);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+  @keyframes pulse-line {
+    to {
+      stroke-dashoffset: -200;
+    }
   }
 }
 
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Soft colored light behind the content, the visual signature of Pulso. */
+.aurora {
+  background:
+    radial-gradient(40rem 30rem at 10% -10%, rgb(31 75 255 / 0.22), transparent 60%),
+    radial-gradient(35rem 28rem at 95% 0%, rgb(255 46 77 / 0.16), transparent 60%),
+    radial-gradient(30rem 25rem at 60% 110%, rgb(122 60 255 / 0.16), transparent 60%);
+}
+
+.grid-lines {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, var(--blue), var(--violet) 45%, var(--red));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.04) inset,
+    0 18px 40px -24px var(--glow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
