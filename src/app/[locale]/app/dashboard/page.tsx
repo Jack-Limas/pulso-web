@@ -5,7 +5,7 @@ import { EmptyNote, Panel, StatCard } from "@/components/dashboard/panel";
 import { ButtonLink } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { privateClients } from "@/lib/api/server";
-import { formatDate, formatMoney } from "@/lib/format";
+import { formatDate, formatMoney, formatMonth } from "@/lib/format";
 import { isLocale } from "@/lib/i18n/config";
 import { format, getDictionary } from "@/lib/i18n/get-dictionary";
 
@@ -17,17 +17,20 @@ export default async function DashboardPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ account?: string }>;
+  searchParams: Promise<{ account?: string; statement?: string }>;
 }) {
   const { locale: raw } = await params;
-  const { account } = await searchParams;
+  const { account, statement } = await searchParams;
   const locale = isLocale(raw) ? raw : "es";
   const dictionary = getDictionary(locale);
   const t = dictionary.app.dashboard;
   const api = await privateClients(locale);
-  const [{ accounts }, dashboard] = await Promise.all([
+  // A statement chosen in "My statements" wins over the account filter.
+  const scope = statement ? { statementId: statement } : account ? { bankAccountId: account } : {};
+  const [{ accounts }, dashboard, chosen] = await Promise.all([
     api.bankAccounts.listBankAccounts({}),
-    api.insights.getDashboard(account ? { bankAccountId: account } : {}),
+    api.insights.getDashboard(scope),
+    statement ? api.statements.getStatement({ id: statement }).then((response) => response.statement) : undefined,
   ]);
   const money = (cents: bigint) => formatMoney(cents, locale);
   const hasData = dashboard.incomeCents > 0n || dashboard.expenseCents > 0n;
@@ -38,12 +41,17 @@ export default async function DashboardPage({
       <div className="flex flex-wrap items-end gap-4">
         <div>
           <h1 className="font-display text-4xl font-bold tracking-tight">{t.title}</h1>
-          <p className="mt-1 flex items-center gap-2 text-muted">
-            {t.subtitle}
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-muted">
+            {chosen ? format(t.showingStatement, { period: formatMonth(chosen.periodStart, locale) }) : t.subtitle}
+            {chosen && (
+              <Link href={`/${locale}/app/dashboard`} className="font-semibold text-blue hover:underline">
+                {t.latest}
+              </Link>
+            )}
             <span className="rounded-full bg-blue/10 px-2 py-0.5 text-xs font-semibold text-blue">{t.live}</span>
           </p>
         </div>
-        {accounts.length > 1 && (
+        {accounts.length > 1 && !chosen && (
           <nav className="ml-auto flex flex-wrap gap-2 text-sm">
             {[{ id: "", alias: t.allAccounts }, ...accounts].map((item) => {
               const active = (account ?? "") === item.id;
