@@ -30,6 +30,23 @@ test.describe("statement upload and dashboard", () => {
     await expect(page.getByRole("heading", { name: "Recomendaciones" })).toBeVisible();
   });
 
+  test("past statements can be reopened from my statements", async ({ page }) => {
+    await upload(page, ANDINO_PDF);
+    await expect(page.getByTestId("upload-status")).toHaveText("Proceso completado", { timeout: 60_000 });
+
+    await page.getByRole("link", { name: "Mis extractos" }).click();
+    await expect(page.getByText("Agosto de 2026")).toBeVisible();
+    await page.getByRole("link", { name: "Ver análisis" }).click();
+
+    await expect(page.getByText("Análisis de Agosto de 2026")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Gastos por categoría" })).toBeVisible();
+  });
+
+  test("the sidebar shows who is signed in", async ({ page }) => {
+    await expect(page.getByTestId("user-card")).toContainText("Prueba E2E");
+    await expect(page.getByTestId("user-card")).toContainText("Usuario");
+  });
+
   test("the main thread mode processes the same file", async ({ page }) => {
     await page.getByRole("radio", { name: "Hilo principal" }).click();
 
