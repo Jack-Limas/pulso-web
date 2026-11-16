@@ -47,15 +47,26 @@ test.describe("authentication", () => {
 });
 
 test.describe("preferences", () => {
-  test("switches language and theme", async ({ page }) => {
+  test("keeps the dark theme when the language changes", async ({ page }) => {
     await page.goto("/es");
+    const html = page.locator("html");
+
+    await page.getByRole("button", { name: "Cambiar tema" }).click();
+    await expect(html).toHaveAttribute("data-theme", "dark");
     await page.getByRole("link", { name: "en", exact: true }).click();
+
     await expect(page.getByRole("heading", { level: 1 })).toContainText("of your money");
-
-    await page.getByRole("button", { name: "Toggle theme" }).click();
-
-    await expect(page.locator("html")).toHaveClass(/dark/);
+    await expect(html).toHaveAttribute("data-theme", "dark");
     await page.reload();
-    await expect(page.locator("html")).toHaveClass(/dark/);
+    await expect(html).toHaveAttribute("data-theme", "dark");
+  });
+
+  test("the final call to action is readable in dark mode", async ({ page }) => {
+    await page.goto("/es");
+    await page.getByRole("button", { name: "Cambiar tema" }).click();
+
+    const cta = page.getByRole("link", { name: "Crear cuenta" });
+    await expect(cta).toHaveCSS("color", "rgb(11, 16, 48)");
+    await expect(cta).toHaveCSS("background-color", "rgb(255, 255, 255)");
   });
 });
