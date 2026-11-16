@@ -11,6 +11,7 @@ export function AppNav({ isAdmin }: { isAdmin: boolean }) {
   const router = useRouter();
   const items: { href: string; label: string; icon: IconName }[] = [
     { href: "dashboard", label: dictionary.nav.dashboard, icon: "home" },
+    { href: "statements", label: dictionary.nav.statements, icon: "calendar" },
     { href: "upload", label: dictionary.nav.upload, icon: "upload" },
     { href: "transactions", label: dictionary.nav.transactions, icon: "list" },
     ...(isAdmin ? [{ href: "admin", label: dictionary.nav.admin, icon: "shield" as const }] : []),
