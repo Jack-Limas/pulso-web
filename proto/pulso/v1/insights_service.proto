@@ -62,6 +62,44 @@ message GetDashboardResponse {
   repeated Recommendation recommendations = 9;
 }
 
+enum AlertKind {
+  ALERT_KIND_UNSPECIFIED = 0;
+  ALERT_KIND_ANOMALY = 1;
+  ALERT_KIND_ANT_EXPENSE = 2;
+  ALERT_KIND_LOW_LIQUIDITY = 3;
+  ALERT_KIND_FAILED_STATEMENT = 4;
+}
+
+enum AlertSeverity {
+  ALERT_SEVERITY_UNSPECIFIED = 0;
+  ALERT_SEVERITY_LOW = 1;
+  ALERT_SEVERITY_MEDIUM = 2;
+  ALERT_SEVERITY_HIGH = 3;
+}
+
+message Alert {
+  // Stable across requests, so clients can remember which alerts were already seen.
+  string id = 1;
+  AlertKind kind = 2;
+  AlertSeverity severity = 3;
+  // What the alert is about: a transaction, a merchant or a file.
+  string subject = 4;
+  // The engine's explanation, already in the user's language, when there is one.
+  string reason = 5;
+  int64 amount_cents = 6;
+  int32 count = 7;
+  string statement_id = 8;
+  string period_start = 9;
+  string occurred_on = 10;
+}
+
+message ListAlertsRequest {}
+
+message ListAlertsResponse {
+  repeated Alert alerts = 1;
+}
+
 service InsightsService {
   rpc GetDashboard(GetDashboardRequest) returns (GetDashboardResponse);
+  rpc ListAlerts(ListAlertsRequest) returns (ListAlertsResponse);
 }
