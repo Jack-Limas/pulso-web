@@ -24,3 +24,11 @@ export function formatDate(isoDate: string, locale: Locale): string {
     year: "numeric",
   });
 }
+
+export function formatMonth(isoDate: string, locale: Locale): string {
+  const label = new Date(`${isoDate}T00:00:00`).toLocaleDateString(locale === "es" ? "es-CO" : "en-US", {
+    month: "long",
+    year: "numeric",
+  });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
