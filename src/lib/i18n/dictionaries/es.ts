@@ -11,6 +11,7 @@ export const es = {
     login: "Iniciar sesión",
     start: "Empezar gratis",
     dashboard: "Panel",
+    statements: "Mis extractos",
     upload: "Subir extracto",
     transactions: "Transacciones",
     admin: "Administración",
@@ -101,6 +102,15 @@ export const es = {
   },
   app: {
     greeting: "Hola",
+    roles: { user: "Usuario", admin: "Administrador" },
+    statements: {
+      title: "Mis extractos",
+      subtitle: "Cada mes que subiste, con su análisis.",
+      transactions: "{count} transacciones",
+      open: "Ver análisis",
+      empty: "Aún no has subido extractos.",
+      status: { COMPLETED: "Analizado", FAILED: "Falló", PENDING: "Analizando" },
+    },
     dashboard: {
       title: "Tu panel",
       subtitle: "Resumen del último extracto analizado.",
@@ -126,6 +136,8 @@ export const es = {
       emptyBody: "Sube tu primer extracto en PDF y en segundos verás tu panel.",
       none: "Nada que reportar aquí.",
       live: "Se actualiza en vivo",
+      showingStatement: "Análisis de {period}",
+      latest: "Ver el más reciente",
     },
     upload: {
       title: "Subir extracto",

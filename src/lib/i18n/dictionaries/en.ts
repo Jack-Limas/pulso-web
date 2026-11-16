@@ -13,6 +13,7 @@ export const en: Dictionary = {
     login: "Sign in",
     start: "Start free",
     dashboard: "Dashboard",
+    statements: "My statements",
     upload: "Upload statement",
     transactions: "Transactions",
     admin: "Admin",
@@ -103,6 +104,15 @@ export const en: Dictionary = {
   },
   app: {
     greeting: "Hi",
+    roles: { user: "User", admin: "Administrator" },
+    statements: {
+      title: "My statements",
+      subtitle: "Every month you uploaded, with its analysis.",
+      transactions: "{count} transactions",
+      open: "View analysis",
+      empty: "You haven't uploaded any statements yet.",
+      status: { COMPLETED: "Analyzed", FAILED: "Failed", PENDING: "Analyzing" },
+    },
     dashboard: {
       title: "Your dashboard",
       subtitle: "Summary of your latest analyzed statement.",
@@ -128,6 +138,8 @@ export const en: Dictionary = {
       emptyBody: "Upload your first PDF statement and see your dashboard in seconds.",
       none: "Nothing to report here.",
       live: "Updates live",
+      showingStatement: "Analysis for {period}",
+      latest: "View the latest",
     },
     upload: {
       title: "Upload statement",
