@@ -7,7 +7,9 @@ export function ThemeToggle() {
   const { dictionary } = useI18n();
 
   function toggle() {
-    const isDark = document.documentElement.classList.toggle("dark");
+    const root = document.documentElement;
+    const isDark = root.dataset.theme !== "dark";
+    root.dataset.theme = isDark ? "dark" : "light";
     try {
       localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
     } catch {
