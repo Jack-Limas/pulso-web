@@ -20,8 +20,7 @@ interface DemoUser {
 }
 
 const RECENT = ["2026-08", "2026-09", "2026-10"];
-// October is left out on purpose: those PDFs are for uploading by hand in the browser.
-const LONG_HISTORY = ["2026-06", "2026-07", "2026-08", "2026-09"];
+const LONG_HISTORY = ["2026-06", "2026-07", ...RECENT];
 
 const USERS: DemoUser[] = [
   { slug: "estudiante", fullName: "Valentina Rojas", bankCode: "banco-andino", alias: "Ahorros", months: RECENT },
