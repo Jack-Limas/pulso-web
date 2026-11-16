@@ -152,11 +152,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             <h2 className="relative max-w-xl font-display text-4xl font-bold tracking-tight">
               {landing.finalTitle}
             </h2>
-            <ButtonLink
-              href={app}
-              variant="secondary"
-              className="relative mt-8 border-white/30 bg-white px-7 py-3.5 text-base text-[#0b1030]"
-            >
+            <ButtonLink href={app} variant="inverse" className="relative mt-8 px-7 py-3.5 text-base">
               {landing.finalCta}
               <Icons.arrow className="size-4" />
             </ButtonLink>

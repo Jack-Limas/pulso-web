@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger";
+type Variant = "primary" | "secondary" | "ghost" | "danger" | "inverse";
 
 const BASE =
   "group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.97]";
@@ -12,6 +12,9 @@ const VARIANTS: Record<Variant, string> = {
   secondary: "border border-line bg-surface text-text hover:-translate-y-0.5 hover:border-blue",
   ghost: "text-muted hover:bg-surface-2 hover:text-text",
   danger: "bg-red text-white hover:-translate-y-0.5",
+  // For buttons on a colored band: stays white with dark text in both themes.
+  inverse:
+    "bg-white text-[#0b1030] shadow-[0_12px_30px_-12px_rgb(11_16_48/0.5)] hover:-translate-y-0.5 hover:bg-[#f4f6ff]",
 };
 
 function Shine({ variant }: { variant: Variant }) {
