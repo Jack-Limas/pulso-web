@@ -22,7 +22,8 @@ Cada página usa el patrón que corresponde a sus datos. Se usa el modelo clási
 | `/[locale]/login`, `/register` | **SSG** con isla cliente | El formulario es interactivo, pero la página no depende del usuario |
 | `/[locale]/banks` | **ISR** (`revalidate = 3600`) | El catálogo cambia poco; se regenera en segundo plano sin volver a desplegar |
 | `/[locale]/app/dashboard`, `/admin` | **SSR** (`force-dynamic`) | Datos privados del usuario, frescos en cada petición |
-| `/[locale]/app/upload`, `/transactions` | **CSR** dentro de una página SSR | Web Worker, `File`, `requestAnimationFrame` y filtros en vivo solo existen en el navegador |
+| `/[locale]/app/upload`, `/transactions`, `/alerts` | **CSR** dentro de una página SSR | Web Worker, `File`, `requestAnimationFrame` y datos que cambian en vivo solo existen en el navegador |
+| `/[locale]/app/statements` | **SSR** | Historial privado de extractos; cada uno abre su propio análisis |
 | Escena 3D del landing | **CSR** (`dynamic(..., { ssr: false })`) | WebGL solo existe en el navegador; la página sigue siendo estática |
 
 `next build` lo confirma en su tabla de rutas: ● para SSG/ISR y ƒ para SSR.
@@ -102,6 +103,7 @@ El indicador animado de la pantalla de carga se mueve con **JavaScript**, no con
 - `lib/realtime/realtime-provider.tsx` abre **un WebSocket por pestaña**, se autentica con el primer mensaje y se reconecta con **backoff exponencial con jitter**. Los componentes se suscriben con `useRealtime()`.
 - La pantalla de carga sigue cada etapa del análisis. Guarda los eventos que llegan antes de conocer el ID del extracto, así no se pierde ninguno.
 - Cuando un análisis termina, el dashboard SSR se actualiza con `router.refresh()`. Los anuncios del admin aparecen como avisos.
+- **Centro de alertas:** reúne lo que la IA encontró en todos los meses, con prioridad alta, media o baja, filtros y un contador en el menú de las alertas no vistas (guardadas por navegador). Se actualiza solo cuando termina un análisis.
 - Idiomas: `/es` y `/en`, con diccionarios tipados. Si falta una traducción, TypeScript no compila.
 - Tema claro por defecto y oscuro con botón. Un script en `<head>` aplica la preferencia **antes del primer pintado** para evitar el destello.
 
