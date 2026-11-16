@@ -87,6 +87,11 @@ export const Icons = {
       <path d="M8 3v4M16 3v4M3 10h18M8 14h3M8 17h6" />
     </svg>
   ),
+  bell: (p: SVGProps<SVGSVGElement>) => (
+    <svg {...base(p)}>
+      <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0" />
+    </svg>
+  ),
   logout: (p: SVGProps<SVGSVGElement>) => (
     <svg {...base(p)}>
       <path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H3" />
