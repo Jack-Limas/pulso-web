@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { AppNav } from "@/components/app/app-nav";
 import { LiveToasts } from "@/components/app/live-toasts";
+import { UserCard } from "@/components/app/user-card";
 import { Logo } from "@/components/brand/logo";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -27,17 +28,28 @@ export default async function AppLayout({
   const { auth } = await privateClients(locale);
   const { user } = await auth.getCurrentUser({});
   const firstName = user?.fullName.split(" ")[0] ?? "";
+  const isAdmin = user?.role === Role.ADMIN;
 
   return (
     <RealtimeProvider url={process.env.NEXT_PUBLIC_WS_URL ?? "ws://localhost:8080/ws"}>
       <div className="aurora min-h-dvh lg:grid lg:grid-cols-[260px_1fr]">
-        <aside className="border-b border-line bg-surface/70 p-4 backdrop-blur-xl lg:sticky lg:top-0 lg:h-dvh lg:border-r lg:border-b-0 lg:p-6">
+        <aside className="border-b border-line bg-surface/70 p-4 backdrop-blur-xl lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col lg:border-r lg:border-b-0 lg:p-6">
           <div className="mb-4 flex items-center justify-between lg:mb-10">
             <Link href={`/${locale}`}>
               <Logo size={32} />
             </Link>
           </div>
-          <AppNav isAdmin={user?.role === Role.ADMIN} />
+          <AppNav isAdmin={isAdmin} />
+          {user && (
+            <div className="mt-4 hidden lg:mt-auto lg:block">
+              <UserCard
+                fullName={user.fullName}
+                email={user.email}
+                isAdmin={isAdmin}
+                roleLabel={isAdmin ? dictionary.app.roles.admin : dictionary.app.roles.user}
+              />
+            </div>
+          )}
         </aside>
         <div className="min-w-0">
           <header className="flex flex-wrap items-center gap-3 px-4 py-4 sm:px-8">
